@@ -19,10 +19,21 @@ namespace MVCPelicula.Controllers
         }
 
         // GET: Peliculas
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            var peliculasDBContext = _context.Peliculas.Include(p => p.Genero);
+            var peliculasDBContext = _context.Peliculas.Include(p => p.Genero).AsQueryable();
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                peliculasDBContext = peliculasDBContext.Where(s => s.Titulo.Contains(searchString));
+            }
             return View(await peliculasDBContext.ToListAsync());
+
+        }
+
+        [HttpPost]
+        public string Index(string searchString, bool notUsed)
+        {
+            return $"From [HttpGet]Index with parameter: {searchString}";
         }
 
         // GET: Peliculas/Details/5
